@@ -1,0 +1,36 @@
+- hosts: dockerhosts
+  tasks:
+  - name: Installing python
+    package: 
+      name: python3
+      state: present
+    register: x
+    
+  - debug:
+      var: x
+      
+  - name: Installing python SDK
+    command: "pip3 install docker-py"
+    register: a
+    
+  - debug:
+      var: a
+      
+  - name: Copying webpages
+    copy:
+      src: /var/www/html/index.html
+      dest: /var/www/html/index.html
+      
+  - name: Create a data container
+    docker_container:
+      name: mysite
+      image: httpd
+      exposed_ports:
+        - "80"
+      ports:
+        - "100:80"
+      volumes:
+        - /var/www/html:/user/local/apache2/htdocs
+    register: b
+  - debug:
+      var: b
